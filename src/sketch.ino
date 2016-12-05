@@ -4,13 +4,14 @@
 #endif
 
 #define LED_PIN  1
+#define POT_PIN  2
+#define POT_ANALOG_PIN  1
 #define N_LEDS   24
 
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(N_LEDS, LED_PIN, NEO_GRBW + NEO_KHZ800);
 
-uint8_t brightness = 50;
-uint32_t white = Adafruit_NeoPixel::Color(50, 50, 50, 255);
-int mode = 0;
+uint8_t brightness = 255;
+// uint32_t naturalWhite = Adafruit_NeoPixel::Color(50, 50, 50, 255);
 
 void setup() {
 #ifdef __AVR_ATtiny85__ // Trinket, Gemma, etc.
@@ -20,13 +21,18 @@ void setup() {
   strip.begin();
   strip.setBrightness(brightness);
   strip.show();
+
+  pinMode(POT_PIN, OUTPUT);
 }
 
 void loop() {
-  if (mode == 0) {
-    oneColor(white);
+  int mode = analogRead(POT_ANALOG_PIN);
+
+  if (mode >= 100) {
+    uint32_t color = Adafruit_NeoPixel::Color(50, 50, 50, mode);
+    oneColor(color);
   } else {
-    rainbowCycle(25, 100);
+    rainbowCycle(25, mode);
   }
 }
 
